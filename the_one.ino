@@ -5,15 +5,16 @@
 #include <SPI.h>
 
 rgb_lcd lcd;
+
 byte mac[] = { 0x78, 0x4b, 0x87, 0xaa, 0xad, 0x19 };
 char server[] = "api.thingspeak.com";
 IPAddress ip(192, 168, 0, 177);
 EthernetClient client;
 const String apiKey = "ASW3XH7WESWCG12G";
 const String sendNumber = "17326106075";
-const int colorR = 0;
-const int colorG = 100;
-const int colorB = 100;
+int colorR = 0;
+int colorG = 100;
+int colorB = 100;
 //int sensorValue = 0;
 const int touch = 7;
 const int led = 13;
@@ -31,7 +32,7 @@ void setup() {
   pinMode(touch, INPUT);
   pinMode(led, OUTPUT);
   pinMode(button, INPUT);
-  lcd.begin(16, 2);
+  lcd.begin(16, 1);
   pinMode(4, OUTPUT);
   lcd.setRGB(colorR, colorG, colorB);
   lcd.print("READY");
@@ -47,13 +48,13 @@ void sendMessage()
   Serial.println("Sending SMS");
 
   //this function will send the sms
-  
+
   sendSMS(sendNumber, URLEncode("House Entry"));
 
 }
 void sendSMS(String number, String message)
 {
-  
+
   if (client.connect(server, 80))
   {
 
@@ -91,7 +92,8 @@ void setupEthernet()
   // start the Ethernet connection:
   if (Ethernet.begin(mac) == 0) {
     Serial.println(F("Failed to configure Ethernet using DHCP"));
-    
+    // no point in carrying on, so do nothing forevermore:
+    // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip);
   }
   Serial.print("My IP address: ");
@@ -133,41 +135,17 @@ void loop() {
   }
   else {
     digitalRead(touch);
-    if ((sensorValue == HIGH) && lcd.read("ARMED") {
+    if ((sensorValue == HIGH) && (buttonState == 1)) {
       digitalWrite(led, HIGH);
+      lcd.print("ALERT. ALERT. ALERT.");
       Serial.println("y");
-      delay (10);
-      lcd.print("ALERT               ");
+
       digitalWrite(4, HIGH);
-      delay(100);
+      delay(1000);
       digitalWrite(4, LOW);
-       sendMessage();
+      sendMessage();
       trigger = 1;
 
     }
   }
 }
-/*
-  int sensorValue = digitalRead(touch);
-  if (sensorValue == LOW) {
-    standby();
-    Serial.println("off");
-  }
-  else {
-
-    digitalWrite(led, HIGH);
-    triggered();
-    Serial.println("on");
-  }
-  }
-*/
-void buzzer() {
-  if (sensorValue == HIGH) {
-    digitalWrite(4, HIGH);
-    //tweetMessage();
-    delay(1000);
-    digitalWrite(4, LOW);
-  }
-
-}
-
