@@ -4,6 +4,7 @@
 #include "Ethernet.h";
 #include <SPI.h>
 
+
 rgb_lcd lcd;
 
 byte mac[] = { 0x78, 0x4b, 0x87, 0xaa, 0xad, 0x19 };
@@ -12,9 +13,9 @@ IPAddress ip(192, 168, 0, 177);
 EthernetClient client;
 const String apiKey = "ASW3XH7WESWCG12G";
 const String sendNumber = "17326106075";
-int colorR = 0;
-int colorG = 100;
-int colorB = 100;
+int colorR = 255;
+int colorG = 245;
+int colorB = 0;
 //int sensorValue = 0;
 const int touch = 7;
 const int led = 13;
@@ -25,6 +26,8 @@ int trigger = 0;
 int previous = LOW;
 int buttonState = digitalRead(button);
 int sensorValue = digitalRead(touch);
+
+
 
 
 void setup() {
@@ -130,22 +133,35 @@ void loop() {
   if (buttonState == 1 && trigger == 0 && sensorValue == LOW) {
     digitalWrite(led, LOW);
     Serial.println("n");
-    lcd.print("ARMED               ");
+    lcd.setCursor(0,0);
+    lcd.print("ARMED");
+    armed = true;
 
   }
   else {
-    digitalRead(touch);
-    if ((sensorValue == HIGH) && (buttonState == 1)) {
-      digitalWrite(led, HIGH);
-      lcd.print("ALERT. ALERT. ALERT.");
-      Serial.println("y");
-
-      digitalWrite(4, HIGH);
-      delay(1000);
-      digitalWrite(4, LOW);
-      sendMessage();
-      trigger = 1;
-
+    if (armed = true) {
+    if (sensorValue == HIGH)
+    {
+        digitalWrite(led, HIGH);
+        lcd.setCursor(0,0);
+        delay(50);
+        lcd.print("ALERT");
+        
+        Serial.println("y"); 
     }
   }
+
+  digitalRead(touch);
+  if ((sensorValue == HIGH) && (armed == true)) {
+
+
+    digitalWrite(4, HIGH);
+    delay(1000);
+    digitalWrite(4, LOW);
+    sendMessage();
+    trigger = 1;
+
+  }
 }
+}
+
